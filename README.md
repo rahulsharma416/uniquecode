@@ -1,6 +1,6 @@
 # Create a Unique Code from a sentance
 
-##Usage
+- Usage
 ```
 $sentance = "";
 $obj = new UniqueCode($sentance);
