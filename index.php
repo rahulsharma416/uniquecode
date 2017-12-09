@@ -1,7 +1,8 @@
 <?php
 /**
- * @description: 
- * This class will be having the following use cases:
+ * @author Rahul Sharma <rahul.sharma416@gmail.com>
+ * @version 1.0 
+ * @abstract This class will be having the following use cases:
  * - Set of words > 4
  * - Set of words > 1 and < 4
  * - Set of words = 1 (Characters > 3)
@@ -73,52 +74,62 @@ class UniqueCode
         return $this->uniqueCode;
     }
     
+    private function calculateParentCode($parentCode)
+    {
+        $secStr = explode("_", $parentCode);
+        if(1 == count($secStr) && "_" != trim($secStr[count($secStr) - 1]))
+        {
+            $parentCode .= "_" . 1;
+        }
+        else if(1 > count($secStr) && "_" == trim($secStr[count($secStr) - 1]))
+        {
+            $parentCode .= 1;
+        }
+        else
+        {
+            $lastCounter = intval(trim($secStr[count($secStr) - 1]));
+            $usPos = strrpos($parentCode, "_");
+            $parentCode = substr($parentCode, 0, $usPos + 1) . (++$lastCounter);
+        }
+        return $parentCode;
+    }
+
+    private function calculateNewCode()
+    {
+        if(0 == $this->wordsCount)
+        {
+            $value = -1;
+        }
+        else if(1 == $this->wordsCount)
+        {
+            if(3 < strlen($this->wordsCount))
+            {
+                $value = substr($this->sentence, 0, 3);
+            }
+            else if(0 == strlen($this->wordsCount))
+            {
+                $value = -1;
+            }
+            else if(3 > strlen($this->wordsCount))
+            {
+                $value = substr($this->sentence, 0);
+            }
+            $this->setUniqueCode($value);
+        }
+    }
+    
     public function generateUniqueCode($options = [])
     {
         $parentCode = $options['parent_code'] ?? false;
         if($parentCode)
         {
-            $secStr = explode("_", $parentCode);
-            if(1 == count($secStr) && "_" != trim($secStr[count($secStr) - 1]))
-            {
-                $parentCode .= "_" . 1;
-            }
-            else if(1 > count($secStr) && "_" == trim($secStr[count($secStr) - 1]))
-            {
-                $parentCode .= 1;
-            }
-            else
-            {
-                $lastCounter = intval(trim($secStr[count($secStr) - 1]));
-                $usPos = strrpos($parentCode, "_");
-                $parentCode = substr($parentCode, 0, $usPos + 1) . (++$lastCounter);
-            }
+            $parentCode = $this->calculateParentCode($parentCode);
             $this->setUniqueCode($parentCode);
         }
         else
         {
             $this->countWords(true);
-            if(0 == $this->wordsCount)
-            {
-                return -1;
-            }
-            else if(1 == $this->wordsCount)
-            {
-                $value = "";
-                if(3 < strlen($this->wordsCount))
-                {
-                    $value = substr($this->sentence, 0, 3);
-                }
-                else if(0 == strlen($this->wordsCount))
-                {
-                    return -1;
-                }
-                else if(3 > strlen($this->wordsCount))
-                {
-                    $value = substr($this->sentence, 0);
-                }
-                $this->setUniqueCode($value);
-            }
+            $this->calculateNewCode();
             $value = $this->getUniqueCode() . rand(1, 9999999);
             $this->setUniqueCode($value);
         }
