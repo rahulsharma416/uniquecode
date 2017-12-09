@@ -1,4 +1,6 @@
 <?php
+namespace src\Classes;
+
 /**
  * @author Rahul Sharma <rahul.sharma416@gmail.com>
  * @version 1.0 
@@ -11,14 +13,16 @@
 class UniqueCode
 {
     private $sentence;
+    private $salt;
     private $uniqueCode;
     private $wordsCount;
     private $maxUniqueLimit = 4;
 
-    public function __construct($sentence)
+    public function __construct($sentence, $salt)
     {
         $this->sentence = $sentence;
         $this->wordsCount = 0;
+        $this->salt = $salt;
     }
     
     /**
@@ -76,6 +80,9 @@ class UniqueCode
     
     private function calculateParentCode($parentCode)
     {
+        if(trim($parentCode) === "")
+            return -1;
+        
         $secStr = explode("_", $parentCode);
         if(1 == count($secStr) && "_" != trim($secStr[count($secStr) - 1]))
         {
@@ -98,19 +105,16 @@ class UniqueCode
     {
         if(0 == $this->wordsCount)
         {
-            $value = -1;
+            $this->setUniqueCode(-1);
         }
         else if(1 == $this->wordsCount)
         {
-            if(3 < strlen($this->wordsCount))
+            $value = "";
+            if(3 < strlen($this->sentence))
             {
                 $value = substr($this->sentence, 0, 3);
             }
-            else if(0 == strlen($this->wordsCount))
-            {
-                $value = -1;
-            }
-            else if(3 > strlen($this->wordsCount))
+            else if(3 >= strlen($this->sentence))
             {
                 $value = substr($this->sentence, 0);
             }
@@ -130,8 +134,11 @@ class UniqueCode
         {
             $this->countWords(true);
             $this->calculateNewCode();
-            $value = $this->getUniqueCode() . rand(1, 9999999);
-            $this->setUniqueCode($value);
+            if($this->getUniqueCode() != -1)
+            {
+                $value = $this->getUniqueCode() . $this->salt;
+                $this->setUniqueCode($value);
+            }
         }
         return $this->getUniqueCode();
     }
