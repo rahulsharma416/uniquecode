@@ -125,5 +125,4 @@ class UniqueCode
         return $this->getUniqueCode();
     }
 }
-
 ?>
