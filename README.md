@@ -1,13 +1,13 @@
 # Create a Unique Code from a sentance
 
-### Usage
+### Use Case 1
 ```
 $sentance = "";
 $obj = new UniqueCode($sentance);
 print($obj->generateUniqueCode());
 ```
 
-##Output
+### Output
 ```
 -1
 ```
